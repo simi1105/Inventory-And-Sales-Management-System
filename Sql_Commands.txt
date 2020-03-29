@@ -1,0 +1,44 @@
+create table TBL_STOCK(Product_ID varchar(6) NOT NULL PRIMARY KEY,
+Product_Name varchar(20) UNIQUE,
+Quantity_On_Hand number CHECK(Quantity_On_Hand >=0),
+Product_Unit_Price number CHECK(Product_Unit_Price >=0),
+Reorder_Level number CHECK(Reorder_Level >=0)
+);
+
+
+create table TBL_SALES(
+Sales_ID varchar(6) NOT NULL,Sales_Date date,Product_ID varchar(6) ,
+Quantity_Sold number CHECK(Quantity_Sold >=0),
+Sales_Price_Per_Unit number CHECK(Sales_Price_Per_Unit >=0),
+PRIMARY KEY(Sales_ID),
+FOREIGN KEY (Product_ID) REFERENCES TBL_STOCK(Product_ID)
+);
+
+
+insert into TBL_STOCK values('RE1001','REDMI Note 3',20,12000,5);
+
+insert into TBL_STOCK values('ip1002','Iphone 5S',10,21000,2);
+
+insert into TBL_STOCK values('PA1003','Panasonic P55',50,5500,5);
+
+
+create sequence SEQ_SALES_ID
+START WITH 1000
+INCREMENT BY 1
+MINVALUE 1
+MAXVALUE 9999999
+NOCYCLE;
+
+create sequence SEQ_PRODUCT_ID
+START WITH 1004
+INCREMENT BY 1
+MINVALUE 1
+MAXVALUE 9999999
+NOCYCLE;
+
+create view V_SALES_REPORT AS
+select Sales_ID, Sales_Date, Product_ID, Product_Name, 
+Quantity_Sold, Product_Unit_Price, Sales_Price_Per_Unit, 
+(Sales_Price_Per_Unit - Product_Unit_Price) Profit_Amount
+FROM TBL_STOCK NATURAL JOIN TBL_SALES
+ORDER BY Profit_Amount DESC, Sales_ID ASC;
